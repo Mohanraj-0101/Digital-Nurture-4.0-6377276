@@ -1,117 +1,99 @@
-CREATE TABLE Accounts (
-  AccountID NUMBER PRIMARY KEY,
-  CustomerID NUMBER,
-  Balance NUMBER,
-  AccountType VARCHAR2(20) 
-);
-
-CREATE TABLE Employees (
-  EmpID NUMBER,
-  Name VARCHAR2(100),
-  Department VARCHAR2(50),
-  Salary NUMBER
-);
-
--- Accounts
-INSERT INTO Accounts VALUES (101, 1, 10000, 'Savings'),
- (102, 2, 5000, 'Savings'),
- (103, 3, 8000, 'Checking');
-COMMIT;
-
--- Employees
-INSERT INTO Employees VALUES (1, 'Arjun', 'IT', 50000),
- (2, 'Diya', 'HR', 45000),
- (3, 'Karthik', 'IT', 52000);
-COMMIT;
-
---Scenario 1
+-- Scenario - 1
 
 CREATE OR REPLACE PROCEDURE ProcessMonthlyInterest IS
 BEGIN
-  FOR acc IN (SELECT * FROM Accounts WHERE AccountType = 'Savings') LOOP
+  FOR acc IN (
+    SELECT AccountID, Balance 
+    FROM Accounts 
+    WHERE AccountType = 'Savings'
+  ) LOOP
     UPDATE Accounts
-    SET Balance = Balance + (acc.Balance * 0.01)
+    SET Balance = Balance + (Balance * 0.01),
+        LastModified = SYSDATE
     WHERE AccountID = acc.AccountID;
 
-    DBMS_OUTPUT.PUT_LINE('Interest added to Account ' || acc.AccountID);
+    DBMS_OUTPUT.PUT_LINE(' Interest applied to AccountID ' || acc.AccountID);
   END LOOP;
+
   COMMIT;
 END;
 /
 
-BEGIN
-  ProcessMonthlyInterest;
-END;
-/
+SET SERVEROUTPUT ON;
+EXEC ProcessMonthlyInterest;
 
---Scenario 2
 
-CREATE OR REPLACE PROCEDURE UpdateEmployeeBonus(
-  deptName IN VARCHAR2,
-  bonusPercent IN NUMBER
+-- Scenario - 2
+
+CREATE OR REPLACE PROCEDURE UpdateEmployeeBonus (
+  dept_name IN VARCHAR2,
+  bonus_percent IN NUMBER
 ) IS
 BEGIN
-  FOR emp IN (SELECT * FROM Employees WHERE Department = deptName) LOOP
+  FOR emp IN (
+    SELECT EmployeeID, Salary 
+    FROM Employees 
+    WHERE Department = dept_name
+  ) LOOP
     UPDATE Employees
-    SET Salary = Salary + (emp.Salary * bonusPercent / 100)
-    WHERE EmpID = emp.EmpID;
+    SET Salary = Salary + (Salary * bonus_percent / 100)
+    WHERE EmployeeID = emp.EmployeeID;
 
-    DBMS_OUTPUT.PUT_LINE('Bonus applied to ' || emp.Name);
+    DBMS_OUTPUT.PUT_LINE(' Bonus applied to EmployeeID ' || emp.EmployeeID);
   END LOOP;
+
   COMMIT;
 END;
 /
 
-BEGIN
-  UpdateEmployeeBonus('IT', 10); 
-END;
-/
+SET SERVEROUTPUT ON;
+EXEC UpdateEmployeeBonus('IT', 10);
 
 
---Scenario 3
+-- Scenario - 3
 
-CREATE OR REPLACE PROCEDURE TransferFunds(
-  fromAccountID IN NUMBER,
-  toAccountID IN NUMBER,
+CREATE OR REPLACE PROCEDURE TransferFunds (
+  from_account IN NUMBER,
+  to_account IN NUMBER,
   amount IN NUMBER
 ) IS
-  fromBalance NUMBER;
+  from_balance NUMBER;
 BEGIN
-  -- Use SELECT INTO safely assuming AccountID is unique
-  SELECT Balance INTO fromBalance 
-  FROM Accounts 
-  WHERE AccountID = fromAccountID;
+  -- Get balance of source account
+  SELECT Balance INTO from_balance
+  FROM Accounts
+  WHERE AccountID = from_account
+  FOR UPDATE;
 
-  IF fromBalance >= amount THEN
-    UPDATE Accounts
-    SET Balance = Balance - amount
-    WHERE AccountID = fromAccountID;
-
-    UPDATE Accounts
-    SET Balance = Balance + amount
-    WHERE AccountID = toAccountID;
-
-    DBMS_OUTPUT.PUT_LINE(' Transferred ' || amount || ' from Account ' ||
-                         fromAccountID || ' to Account ' || toAccountID);
-    COMMIT;
-  ELSE
-    DBMS_OUTPUT.PUT_LINE(' Insufficient funds in Account ' || fromAccountID);
+  IF from_balance < amount THEN
+    DBMS_OUTPUT.PUT_LINE(' Transfer failed: Insufficient funds in AccountID ' || from_account);
+    RETURN;
   END IF;
 
+  -- Deduct from source
+  UPDATE Accounts
+  SET Balance = Balance - amount,
+      LastModified = SYSDATE
+  WHERE AccountID = from_account;
+
+  -- Add to target
+  UPDATE Accounts
+  SET Balance = Balance + amount,
+      LastModified = SYSDATE
+  WHERE AccountID = to_account;
+
+  DBMS_OUTPUT.PUT_LINE(' Transferred ' || amount || 
+                       ' from AccountID ' || from_account || 
+                       ' to AccountID ' || to_account);
+
+  COMMIT;
 EXCEPTION
-  WHEN TOO_MANY_ROWS THEN
-    DBMS_OUTPUT.PUT_LINE(' Error: More than one account found for AccountID ' || fromAccountID);
   WHEN NO_DATA_FOUND THEN
-    DBMS_OUTPUT.PUT_LINE(' Error: No account found for AccountID ' || fromAccountID);
+    DBMS_OUTPUT.PUT_LINE(' Transfer failed: One or both accounts do not exist.');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE(' Error occurred: ' || SQLERRM);
 END;
 /
 
-
-BEGIN
-  TransferFunds(101, 102, 500); 
-END;
-/
-
-
-SELECT * FROM ACCOUNTS;
-SELECT * FROM EMPLOYEES;
+SET SERVEROUTPUT ON;
+EXEC TransferFunds(1, 2, 500);
