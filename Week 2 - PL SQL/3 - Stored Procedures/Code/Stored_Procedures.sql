@@ -1,3 +1,4 @@
+
 -- Scenario - 1
 
 CREATE OR REPLACE PROCEDURE ProcessMonthlyInterest IS
