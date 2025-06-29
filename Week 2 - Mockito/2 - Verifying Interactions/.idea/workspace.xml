@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca0cc9c0-52d9-49c6-b36a-31137fb468fc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Code/src/main/java/org/example/ExternalApi.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Code/src/main/java/org/example/MyService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Code/src/test/java/org/example/MyServiceTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="ca0cc9c0-52d9-49c6-b36a-31137fb468fc" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,6 +42,13 @@
     "project.structure.side.proportion": "0.0"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\mohan\OneDrive\Desktop\Cognizant\Digital-Nurture-4.0-6377276\Week 2 - Mockito\2 - Verifying Interactions\Code" />
+      <recent name="C:\Users\mohan\OneDrive\Desktop\Cognizant\Digital-Nurture-4.0-6377276\Week 2 - Mockito\2 - Verifying Interactions" />
+      <recent name="C:\Users\mohan\OneDrive\Desktop\Cognizant\Digital-Nurture-4.0-6377276\Week 2 - Mockito\2 - Verifying Interactions\.mvn\Code" />
+    </key>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="ca0cc9c0-52d9-49c6-b36a-31137fb468fc" name="Changes" comment="" />
