@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.cognizant.spring_learn" level="DEBUG" />
+    <logger name="com.cognizant.springlearn" level="DEBUG" />
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
