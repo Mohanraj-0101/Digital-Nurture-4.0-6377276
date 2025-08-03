@@ -1,0 +1,13 @@
+# Ignore IntelliJ config
+.idea/
+*.iml
+*.xml
+*.class
+
+# Ignore OS junk
+.DS_Store
+Thumbs.db
+
+# Ignore logs and target folder
+*.log
+target/
