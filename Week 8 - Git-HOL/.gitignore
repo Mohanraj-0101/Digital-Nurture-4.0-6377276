@@ -1,0 +1,3 @@
+*.log   # Ignore all .log files
+2. Git-HOL/    # Ignore the log folder
+"*.orig" 
